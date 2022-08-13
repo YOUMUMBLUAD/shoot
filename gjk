@@ -1,19 +1,14 @@
-local settings = {repeatamount = 5000}
-            local mt = getrawmetatable(game)
-            local old = mt.__namecall
-            
-            setreadonly(mt, false)
-            
-            task.spawn(function()
-                mt.__namecall = function(self, ...)
-                    local args = {...}
-                    local method = getnamecallmethod();
-                    if method == "FireServer" and self.Name == "Impact" then
-                        for i = 1, settings.repeatamount do
-                            old(self, ...)
-                        end;
-                    end;
-                    return old(self, ...)
-                end
-            end)
-            setreadonly(mt, true)
+local meleeRemote = game:GetService("ReplicatedStorage").GunRemotes.Impact;
+        local OldNameCall = nil
+        OldNameCall = hookmetamethod(game, "__namecall", function(Self, ...)
+            local Args = {...}
+            local NamecallMethod = getnamecallmethod()
+
+            if not checkcaller() and Self == meleeRemote and NamecallMethod == "FireServer" then
+                for i=1, 15, 1 do
+                    OldNameCall(Self,...);
+                end        
+            end
+
+            return OldNameCall(Self, ...)
+        end)
